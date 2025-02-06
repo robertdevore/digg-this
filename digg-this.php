@@ -84,8 +84,7 @@ add_action( 'plugins_loaded', 'digg_this_load_textdomain' );
  */
 function digg_this_activate() {
 
-    $icons = ['x', 'bluesky', 'mastodon', 'facebook', 'linkedin', 'whatsapp'];
-    $icons = apply_filters( 'digg_this_share_icons', $icons );
+    $icons = apply_filters( 'digg_this_share_icons', ['x', 'bluesky', 'mastodon', 'facebook', 'linkedin', 'whatsapp'] );
 
     $default_settings = [
         'enabled_icons'      => $icons,
@@ -117,7 +116,7 @@ function digg_this_enqueue_single_assets() {
 
     if ( in_array( get_post_type(), $enabled_post_types, true ) ) {
         wp_enqueue_style( 'digg-this-style', DIGG_THIS_PLUGIN_URL . 'assets/css/digg-this.css' );
-        
+  
         // Inline CSS to dynamically apply the selected colors
         $custom_css = "
             .digg-this-icon svg {
@@ -131,6 +130,11 @@ function digg_this_enqueue_single_assets() {
                 box-sizing: border-box;
                 position: relative;
                 margin: 0 6px;
+                color: transparent;
+            }
+            a.digg-this-icon:hover,
+            a.digg-this-icon:focus,
+            a.digg-this-icon:active {
                 color: transparent;
             }
             .digg-this-sharing-icons {

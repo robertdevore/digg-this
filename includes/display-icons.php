@@ -20,8 +20,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function digg_this_add_sharing_icons( $content ) {
     if ( is_singular() ) {
-        $settings = get_option( 'digg_this_settings', [] );
-        $enabled_icons = $settings['enabled_icons'] ?? [];
+        $settings           = get_option( 'digg_this_settings', [] );
+        $enabled_icons      = $settings['enabled_icons'] ?? [];
         $enabled_post_types = $settings['enabled_post_types'] ?? ['post'];
 
         if ( in_array( get_post_type(), $enabled_post_types, true ) ) {
