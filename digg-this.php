@@ -54,6 +54,7 @@ define( 'DIGG_THIS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'DIGG_THIS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // Include required files.
+require_once DIGG_THIS_PLUGIN_DIR . 'includes/helper-functions.php';
 require_once DIGG_THIS_PLUGIN_DIR . 'includes/admin-settings.php';
 require_once DIGG_THIS_PLUGIN_DIR . 'includes/metabox.php';
 require_once DIGG_THIS_PLUGIN_DIR . 'includes/display-icons.php';
@@ -84,7 +85,7 @@ add_action( 'plugins_loaded', 'digg_this_load_textdomain' );
  */
 function digg_this_activate() {
 
-    $icons = apply_filters( 'digg_this_share_icons', ['x', 'bluesky', 'mastodon', 'facebook', 'linkedin', 'whatsapp'] );
+    $icons = apply_filters( 'digg_this_share_icons', ['x', 'bluesky', 'mastodon', 'facebook', 'linkedin', 'whatsapp', 'email', 'sms'] );
 
     $default_settings = [
         'enabled_icons'      => $icons,
@@ -113,10 +114,9 @@ function digg_this_enqueue_single_assets() {
     $enabled_post_types = $settings['enabled_post_types'] ?? ['post'];
     $icon_color         = $settings['icon_color'] ?? '#000000';
     $bg_color           = $settings['bg_color'] ?? '#000000';
+    $bg_color_hover     = darken_hex_color( $bg_color, 20 );
 
     if ( in_array( get_post_type(), $enabled_post_types, true ) ) {
-        wp_enqueue_style( 'digg-this-style', DIGG_THIS_PLUGIN_URL . 'assets/css/digg-this.css' );
-  
         // Inline CSS to dynamically apply the selected colors
         $custom_css = "
             .digg-this-icon svg {
@@ -136,6 +136,7 @@ function digg_this_enqueue_single_assets() {
             a.digg-this-icon:focus,
             a.digg-this-icon:active {
                 color: transparent;
+                background: {$bg_color_hover} !important;
             }
             .digg-this-sharing-icons {
                 display: flex;
@@ -149,3 +150,20 @@ function digg_this_enqueue_single_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'digg_this_enqueue_single_assets' );
+
+/**
+ * Enqueue color picker assets.
+ * 
+ * @since  1.0.0
+ * @return void
+ */
+function digg_this_enqueue_admin_assets( $hook ) {
+    if ( 'settings_page_digg-this-settings' !== $hook ) {
+        return;
+    }
+    wp_enqueue_style( 'wp-color-picker' );
+    wp_enqueue_script( 'digg-this-color-picker', DIGG_THIS_PLUGIN_URL . 'assets/js/color-picker.js', [ 'wp-color-picker' ], false, true );
+
+    wp_enqueue_style( 'digg-this-settings', DIGG_THIS_PLUGIN_URL . 'assets/css/settings.css' );
+}
+add_action( 'admin_enqueue_scripts', 'digg_this_enqueue_admin_assets' );

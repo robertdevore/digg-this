@@ -55,8 +55,8 @@ function digg_this_get_icon_html( $icon ) {
     $custom_text = get_post_meta( get_the_ID(), '_digg_this_custom_text', true );
     $hashtags    = get_post_meta( get_the_ID(), '_digg_this_hashtags', true );
 
-    // Build the base text
-    $tweet_text = $title . "\n\n";
+    // Build the base text.
+    $tweet_text = $title . " \n\n";
     if ( ! empty( $custom_text ) ) {
         $tweet_text .= $custom_text . "\n\n";
     }
@@ -68,21 +68,23 @@ function digg_this_get_icon_html( $icon ) {
             return ltrim( trim( $tag ), '#' ); // Remove # if present
         }, explode( ' ', $hashtags ) ));
         
-        $tweet_text .= "\n\n#" . str_replace(',', ' #', $formatted_hashtags); // Add # back for normal display
+        $tweet_text .= "\n\n#" . str_replace( ',', ' #', $formatted_hashtags );
     }
 
-    // Encode text and URL separately
+    // Encode text and URL separately.
     $encoded_text = rawurlencode( $tweet_text );
     $encoded_url  = rawurlencode( $url );
 
-    // Social media share URLs
+    // Social media share URLs.
     $urls = [
         'x'        => 'https://twitter.com/intent/tweet?text=' . rawurlencode( $title ) . '&url=' . $encoded_url . ( ! empty( $formatted_hashtags ) ? '&hashtags=' . rawurlencode( $formatted_hashtags ) : '' ),
         'facebook' => 'https://www.facebook.com/sharer/sharer.php?u=' . $encoded_url,
-        'linkedin' => 'https://www.linkedin.com/shareArticle?url=' . $encoded_url, // LinkedIn only accepts a URL
+        'linkedin' => 'https://www.linkedin.com/shareArticle?url=' . $encoded_url,
         'bluesky'  => 'https://bsky.app/intent/compose?text=' . rawurlencode( $tweet_text ),
         'whatsapp' => 'https://wa.me/?text=' . $encoded_text,
         'mastodon' => 'https://mastodonshare.com/?text=' . $encoded_text,
+        'email'    => 'mailto:?body=' . $encoded_text,
+        'sms'      => 'sms:?&body=' . $encoded_text,
     ];
 
     if ( ! isset( $urls[ $icon ] ) ) {
